@@ -1,9 +1,9 @@
-/*-------------------------------------------------------------------------
+/*------------------------------------------------------------------------
  *
  * session_exec.c
  *
  *
- * Copyright (c) 2008-2015, PostgreSQL Global Development Group
+ * Copyright (c) 2015, Pavel Stehule, pavel.stehule@gmail.com
  *
  * IDENTIFICATION
  *	  contrib/session_exec/session_exec.c
