@@ -24,6 +24,7 @@ void		_PG_init(void);
 void		_PG_fini(void);
 
 char *session_login_function_name = NULL;
+bool session_login_enable = true;
 
 /*
  * Execute function named funcname. This function
@@ -52,14 +53,22 @@ void
 _PG_init(void)
 {
 	DefineCustomStringVariable("session_exec.login_name",
-	                           "Define function that will be executed on login",
-	                           "It is undefined by default",
-	                           &session_login_function_name,
-	                           NULL,
-	                           PGC_USERSET,
-	                           0, NULL, NULL, NULL);
+					 "Define function that will be executed on login",
+					 "It is undefined by default",
+					 &session_login_function_name,
+					 NULL,
+					 PGC_SUSET,
+					 0, NULL, NULL, NULL);
 
-	if (session_login_function_name != NULL && *session_login_function_name != '\0')
+	DefineCustomBoolVariable("session_exec.enable_login",
+					 "Enable to usage login function",
+					 NULL,
+					 &session_login_enable,
+					 true,
+					 PGC_SUSET,
+					 0, NULL, NULL, NULL);
+
+	if (session_login_enable && session_login_function_name != NULL && *session_login_function_name != '\0')
 	{
 		MemoryContext	oldCtx = CurrentMemoryContext;
 
