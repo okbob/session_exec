@@ -21,7 +21,6 @@
 PG_MODULE_MAGIC;
 
 void		_PG_init(void);
-void		_PG_fini(void);
 
 char *session_login_function_name = NULL;
 bool session_login_enable = true;
