@@ -18,6 +18,14 @@
 #include "utils/builtins.h"
 #include "utils/guc.h"
 
+#if PG_VERSION_NUM >= 100000
+
+#include "utils/regproc.h"
+
+#endif
+
+
+
 PG_MODULE_MAGIC;
 
 void		_PG_init(void);
