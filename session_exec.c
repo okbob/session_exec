@@ -11,7 +11,9 @@
  *-------------------------------------------------------------------------
  */
 #include "postgres.h"
+#include "miscadmin.h"
 #include "fmgr.h"
+#include "access/parallel.h"
 #include "access/xact.h"
 #include "catalog/namespace.h"
 #include "storage/ipc.h"
@@ -59,6 +61,12 @@ exec_function(char *funcname)
 void
 _PG_init(void)
 {
+	/* leave early, when current process is not typical session */
+	if ((IsBackgroundWorker || InitializingParallelWorker) || !OidIsValid(MyDatabaseId))
+	{
+		return;
+	}
+
 	DefineCustomStringVariable("session_exec.login_name",
 					 "Define function that will be executed on login",
 					 "It is undefined by default",
