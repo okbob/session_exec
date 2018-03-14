@@ -13,7 +13,13 @@
 #include "postgres.h"
 #include "miscadmin.h"
 #include "fmgr.h"
+
+#if PG_VERSION_NUM >= 90500
+
 #include "access/parallel.h"
+
+#endif
+
 #include "access/xact.h"
 #include "catalog/namespace.h"
 #include "storage/ipc.h"
@@ -61,11 +67,16 @@ exec_function(char *funcname)
 void
 _PG_init(void)
 {
+
+#if PG_VERSION_NUM >= 90500
+
 	/* leave early, when current process is not typical session */
 	if ((IsBackgroundWorker || InitializingParallelWorker) || !OidIsValid(MyDatabaseId))
 	{
 		return;
 	}
+
+#endif
 
 	DefineCustomStringVariable("session_exec.login_name",
 					 "Define function that will be executed on login",
