@@ -53,7 +53,16 @@ exec_function(char *funcname)
 	List *names;
 
 	names = stringToQualifiedNameList(funcname);
+
+#if PG_VERSION_NUM >= 140000
+
+	clist = FuncnameGetCandidates(names, 0, NIL, false, false, false, true);
+
+#else
+
 	clist = FuncnameGetCandidates(names, 0, NIL, false, false, true);
+
+#endif
 
 	if (clist == NULL)
 		elog(WARNING, "function \"%s()\" does not exist", funcname);
