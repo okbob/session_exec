@@ -22,9 +22,11 @@
 
 #include "access/xact.h"
 #include "catalog/namespace.h"
+#include "executor/spi.h"
 #include "storage/ipc.h"
 #include "utils/builtins.h"
 #include "utils/guc.h"
+#include "utils/snapmgr.h"
 
 #if PG_VERSION_NUM >= 100000
 
@@ -112,8 +114,14 @@ _PG_init(void)
 			SetCurrentStatementStartTimestamp();
 			StartTransactionCommand();
 
+			SPI_connect();
+			PushActiveSnapshot(GetTransactionSnapshot());
+
 			exec_function(session_login_function_name);
 
+			SPI_finish();
+
+			PopActiveSnapshot();
 			CommitTransactionCommand();
 		}
 		PG_CATCH();
