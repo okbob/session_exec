@@ -54,7 +54,15 @@ exec_function(char *funcname)
 	FuncCandidateList clist;
 	List *names;
 
+#if PG_VERSION_NUM >= 160000
+
+	names = stringToQualifiedNameList(funcname, NULL);
+
+#else
+
 	names = stringToQualifiedNameList(funcname);
+
+#endif
 
 #if PG_VERSION_NUM >= 140000
 
@@ -105,14 +113,21 @@ _PG_init(void)
 					 PGC_SUSET,
 					 0, NULL, NULL, NULL);
 
-	if (session_login_enable && session_login_function_name != NULL && *session_login_function_name != '\0')
+	if (session_login_enable &&
+		session_login_function_name != NULL &&
+		*session_login_function_name != '\0')
 	{
 		MemoryContext	oldCtx = CurrentMemoryContext;
 
 		PG_TRY();
 		{
+
+#if PG_VERSION_NUM < 150000
+
 			SetCurrentStatementStartTimestamp();
 			StartTransactionCommand();
+
+#endif
 
 			SPI_connect();
 			PushActiveSnapshot(GetTransactionSnapshot());
@@ -122,7 +137,13 @@ _PG_init(void)
 			SPI_finish();
 
 			PopActiveSnapshot();
+
+#if PG_VERSION_NUM < 150000
+
 			CommitTransactionCommand();
+
+#endif
+
 		}
 		PG_CATCH();
 		{
